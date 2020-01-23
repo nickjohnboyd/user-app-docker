@@ -3,6 +3,7 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const port = process.env.PORT || 3000;
 
 let app = express();
 let num = 0;
@@ -113,6 +114,6 @@ app.get('/recipe', (req, res) => {
 	// });
 });
 
-app.listen(4000, () => {
-	console.log('Server is up and listening on port 4000');
+app.listen(port, () => {
+	console.log(`Server is up and listening on port ${port}`);
 });
