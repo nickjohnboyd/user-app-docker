@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "4002:4002"
+    environment:
+      - name=Nick Boyd
+    container_name: my-user-app    
+  node:
+    image: "node:current-alpine"
