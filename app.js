@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4002;
 
 let app = express();
 let num = 0;
@@ -53,47 +53,55 @@ app.post('/user', (req, res) => {
 			.then(() => {
 					console.log('...Done');
 			});
+	
+	// if(req.session.users){
+	// 	req.session.users++;
+	// 	res.write(`<h1>users: ${req.session.users}</h1>`);
+	// 	res.write(`<h3>expires: ${req.session.cookie.maxAge / 1000}s</h3>`);
+	// 	res.end();
+	// }
+	// else {
+	// 	req.session.users = 1;
+	// 	res.end('First user added!');
+	// }
+	// users = req.session.users;
 
-	res.redirect('/sessionusers');
+	res.redirect('/lookup.html');
 });
 
-app.get('/users', (req, res) => {
-	if(req.session.users){
-		req.session.users++;
-		res.write(`<h1>users: ${req.session.users}</h1>`);
-		res.write(`<h3>expires: ${req.session.cookie.maxAge / 1000}s</h3>`);
-		res.end();
-	}
-	else {
-		req.session.users = 1;
-		res.end('First user added!');
-	}
-	users = req.session.users;
+app.get('/user', (req, res) => {
+	res.send('user page');
 });
 
 app.get('/sessionusers', (req, res) => {
 	res.send(`Number of users added: ${users}`);
 });
 
-// app.post('/lookup', (req, res) => {
-// 	let first = req.body.first;
-// 	console.log(first);
-// 	console.log('post request to look up user');
+app.post('/lookup', (req, res) => {
+	let first = req.body.first;
+	console.log(first);
+	console.log('post request to look up user');
 
-// 	let results = [];
+	let results = [];
+	let userFound = false;
 
-// 	fs.createReadStream('./users.csv')
-//   .pipe(csv())
-//   .on('data', (data) => results.push(data))
-//   .on('end', () => {
-// 		console.log(results);
-// 		if(results[0].first === first) {
-// 			res.send(`user ${first} found`);
-// 		}
-// 	});	
-	
-// 	res.send('user not found');
-// });
+	fs.createReadStream('./users.csv')
+  .pipe(csv())
+  .on('data', (data) => results.push(data))
+  .on('end', () => {
+		console.log(results);
+		results.forEach(u => {
+			if(u.FIRST === first) {
+				console.log('here');
+				userFound = true;
+			}
+		});
+		console.log('I am here');
+		if(userFound) res.write(`user ${first} found`);
+		else res.write('user not found');
+		res.end();	
+	});	
+});
 
 app.get('/', (req, res) => {
 	res.send(`
